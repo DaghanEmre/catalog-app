@@ -6,34 +6,19 @@
 > Full-stack product catalog with Spring Boot 3.4 + Java 21 + PostgreSQL
 
 
-## 🎯 Project Overview
+## 📚 Documentation & Architecture
 
-This project was developed to showcase the core pillars of a modern product catalog system: security, architecture, and data management. Beyond being just a CRUD application, it is an example of "Clean Architecture" that prioritizes architectural flexibility and security standards.
+This project follows **Clean Architecture** principles and production-grade security patterns. Detailed decision records and guides are available below:
 
-### Key Features
-- **Clean Architecture**: Independent business logic and easy testability.
-- **Domain-Driven Design (Lite)**: Focused layering and domain isolation.
-- **Dual Authentication**: Simultaneous Session and JWT-based authorization.
-- **Role-Based Access Control (RBAC)**: Secure access management with Admin and User roles.
-- **Database Versioning**: Controlled schema management using Flyway.
+### 🏛️ Architecture Decisions (ADR)
+- [**ADR-001: Clean Architecture Adoption**](doc/adr/001-clean-architecture.md) - Why we chose Clean Architecture and our phased implementation strategy.
+- [**ADR-002: Dual Authentication Strategy**](doc/adr/002-dual-authentication.md) - Technical details on supporting both JWT (APIs) and Sessions (Web UI).
 
-## 🏗️ Architecture
+### 🛠️ Reference Guides
+- [**API Reference Guide**](doc/API_GUIDE.md) - Standard RFC 7807 error handling and endpoint documentation.
+- [**Deployment & Operations**](doc/DEPLOYMENT.md) - Docker, CI/CD pipelines, and AWS production topology.
 
-### Tech Stack
-- **Backend**: Java 21, Spring Boot 3.4.1, Hibernate, Flyway
-- **Database**: PostgreSQL 16
-- **Security**: Spring Security 6, JWT (API) + Form Login (Web UI)
-- **Frontend**: Thymeleaf + Bootstrap 5 (Phase 1) / Angular + PrimeNG (Phase 2)
-- **Build**: Gradle 8.5
-
-### Package Structure
-```
-com.daghan.catalog/
-├── domain/          # Business logic & entities
-├── application/     # Use cases & DTOs
-├── infrastructure/  # JPA, Security, External services
-└── interfaces/      # REST controllers, MVC controllers
-```
+---
 
 ## 🚀 Quick Start
 
@@ -123,15 +108,18 @@ Authorization: Bearer <token>
 - [x] REST API basics
 
 **Day 2** (Jan 31): Security + CRUD
-- [ ] Form login (Web UI)
-- [ ] Full CRUD endpoints
-- [ ] Global exception handling
-- [ ] Swagger UI integration
+- [x] Form login (Web UI)
+- [x] Full CRUD endpoints
+- [x] Global exception handling
+- [x] Swagger UI integration
+- [x] CSRF protection & Security hardening
+- [x] DTO-based View Layer (no entity leakage)
 
-**Day 3** (Feb 1): Frontend
-- [ ] Thymeleaf product pages
-- [ ] Admin CRUD interface
-- [ ] Bootstrap styling
+**Day 3** (Feb 1): Frontend & Domain Refinement
+- [x] Thymeleaf product pages (Admin CRUD interface)
+- [x] Bootstrap  styling (Modern design)
+- [ ] Extract use-case layer for business logic
+- [ ] Introduce rich domain models
 
 **Day 4** (Feb 2): Polish + Documentation
 - [ ] Unit tests
