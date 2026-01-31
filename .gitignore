@@ -1,0 +1,39 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Spring Boot
+application-local.yml
+application-dev.yml
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+
+# Frontend (future)
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Docker volumes
+postgres_data/

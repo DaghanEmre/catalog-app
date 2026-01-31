@@ -1,0 +1,83 @@
+### Catalog App API Tests
+### Base URL
+@baseUrl = http://localhost:8080
+@adminToken = 
+@userToken = 
+
+### 1. Login as Admin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### 2. Login as User
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "user123"
+}
+
+### 3. List All Products (requires token)
+GET {{baseUrl}}/api/products
+Authorization: Bearer {{adminToken}}
+
+### 4. Get Single Product
+GET {{baseUrl}}/api/products/1
+Authorization: Bearer {{adminToken}}
+
+### 5. Create Product (Admin only)
+POST {{baseUrl}}/api/products
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "MacBook Pro M3",
+  "price": 2499.99,
+  "stock": 5,
+  "status": "ACTIVE"
+}
+
+### 6. Update Product (Admin only)
+PUT {{baseUrl}}/api/products/1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Laptop Dell XPS 15 - Updated",
+  "price": 1399.99,
+  "stock": 20,
+  "status": "ACTIVE"
+}
+
+### 7. Delete Product (Admin only)
+DELETE {{baseUrl}}/api/products/5
+Authorization: Bearer {{adminToken}}
+
+### 8. Try to Create Product with User Token (should fail with 403)
+POST {{baseUrl}}/api/products
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "name": "Test Product",
+  "price": 99.99,
+  "stock": 10,
+  "status": "ACTIVE"
+}
+
+### 9. Health Check
+GET {{baseUrl}}/actuator/health
+
+### 10. Invalid Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "invalid",
+  "password": "wrong"
+}
