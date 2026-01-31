@@ -5,7 +5,6 @@
 
 > Full-stack product catalog with Spring Boot 3.4 + Java 21 + PostgreSQL
 
-## 🎯 Project Overview
 
 ## 🎯 Project Overview
 
