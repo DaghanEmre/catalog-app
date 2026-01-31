@@ -7,14 +7,16 @@
 
 ## 🎯 Project Overview
 
-Bu proje, modern bir ürün katalog sisteminin temel taşlarını (güvenlik, mimari, veri yönetimi) sergilemek amacıyla geliştirilmiştir. Sadece bir CRUD uygulaması olmanın ötesinde, mimari esneklik ve güvenlik standartlarını ön planda tutan bir "Clean Architecture" örneğidir.
+## 🎯 Project Overview
 
-### Temel Özellikler
-- **Clean Architecture**: Bağımsız iş mantığı ve kolay test edilebilirlik.
-- **Domain-Driven Design (Lite)**: İş odaklı katmanlama ve domain izolasyonu.
-- **Dual Authentication**: Aynı anda hem Session hem de JWT tabanlı yetkilendirme.
-- **Role-Based Access Control (RBAC)**: Admin ve Kullanıcı rolleriyle güvenli erişim yönetimi.
-- **Database Versioning**: Flyway ile kontrollü veritabanı şeması yönetimi.
+This project was developed to showcase the core pillars of a modern product catalog system: security, architecture, and data management. Beyond being just a CRUD application, it is an example of "Clean Architecture" that prioritizes architectural flexibility and security standards.
+
+### Key Features
+- **Clean Architecture**: Independent business logic and easy testability.
+- **Domain-Driven Design (Lite)**: Focused layering and domain isolation.
+- **Dual Authentication**: Simultaneous Session and JWT-based authorization.
+- **Role-Based Access Control (RBAC)**: Secure access management with Admin and User roles.
+- **Database Versioning**: Controlled schema management using Flyway.
 
 ## 🏗️ Architecture
 
@@ -146,12 +148,12 @@ Authorization: Bearer <token>
 - [ ] Pagination & filtering
 - [ ] Product images upload
 
-## 📖 Öğrenim Çıktıları (Key Learnings)
-Bu yoğun 4 günlük süreçte kodun ötesinde şu mimari tecrübeler edinilmiştir:
-- **Hibrit Güvenlik**: Klasik web uygulamaları ile modern API servislerini aynı güvenlik çatısı altında (Spring Security 6) nasıl uyumlu çalıştırılacağı.
-- **Hız vs Kalite Dengesi**: Kısıtlı sürede mimari kaliteden ödün vermeden nasıl ilerlenebileceği (Pragmatik DDD yaklaşımı).
-- **Altyapı Otomasyonu**: Docker Compose ve GitHub Actions ile yerelden sunucuya (local-to-prod) kesintisiz bir akış kurma.
-- **Sözleşme Odaklı Geliştirme**: OpenAPI (Swagger) kullanarak önyüz ve arka yüz arasındaki iletişimi standartlaştırma.
+## 📖 Key Learnings
+During this intense 4-day sprint, the following architectural experiences were gained beyond just coding:
+- **Hybrid Security**: How to harmoniously integrate traditional web applications and modern API services under the same security umbrella (Spring Security 6).
+- **Speed vs. Quality Balance**: How to maintain architectural integrity while meeting tight deadlines (Pragmatic DDD approach).
+- **Infrastructure Automation**: Establishing a seamless local-to-production flow using Docker Compose and GitHub Actions.
+- **Contract-First Development**: Standardizing communication between frontend and backend using OpenAPI (Swagger).
 
 ## 👨‍💻 Author
 **Daghan Emre**
@@ -176,28 +178,28 @@ To use the `deploy.yml` workflow, add the following secrets to your GitHub repos
 
 ---
 
-## 🏛️ Mimari Kararlar ve Yaklaşımlar (Architecture Decisions)
+## 🏛️ Architecture Decisions
 
-Bu proje, kısıtlı bir sürede (4 gün) hem modern standartları karşılayan hem de sürdürülebilir bir yapı kurma hedefiyle tasarlandı.
+This project was designed with the goal of building a sustainable structure that meets modern standards within a limited timeframe (4 days).
 
-### 🏠 Neden Clean Architecture?
-Portfolyo projesi olması sebebiyle, kodun çerçevelerden (Spring Boot vb.) bağımsız iş mantığını koruyabildiğini göstermek öncelikliydi. 
-- **Domain Layer**: İş kuralları burada toplanarak dış dünyadan (DB, Web) izole edildi.
-- **Port-Adapter Yapısı**: Veritabanı veya UI teknolojisi değişse bile iş mantığının etkilenmemesi sağlandı.
+### 🏠 Why Clean Architecture?
+As a portfolio project, it was primary to demonstrate that the business logic can remain independent of frameworks (Spring Boot, etc.).
+- **Domain Layer**: Business rules are centralized here, isolated from the outside world (DB, Web).
+- **Port-Adapter Pattern**: Ensured that the business logic remains unaffected even if database or UI technologies change.
 
-### 🔐 Çift Katmanlı Güvenlik (Dual Security Strategy)
-En büyük mimari tercihlerimizden biri, aynı uygulamada hem **Session-based (Form Login)** hem de **Stateless (JWT)** yapılarını aynı anda kullanmak oldu.
-- **Web UI**: Thymeleaf ile hızlıca çalışan, SEO dostu ve güvenli (CSRF korumalı) bir arayüz için Session yapısı tercih edildi.
-- **API**: Gelecekte bir Angular veya Mobile uygulama eklendiğinde hazır olması için stateless JWT altyapısı kuruldu.
-- **Trade-off**: İki farklı `SecurityFilterChain` yönetmek karmaşıklığı artırsa da, esneklik (flexibility) için bu maliyet göze alındı.
+### 🔐 Dual Security Strategy
+One of the major architectural choices was to use both **Session-based (Form Login)** and **Stateless (JWT)** structures simultaneously in the same application.
+- **Web UI**: Session management was preferred for a fast, SEO-friendly, and secure (CSRF protected) interface using Thymeleaf.
+- **API**: A stateless JWT infrastructure was established to be ready for future Angular or mobile application integrations.
+- **Trade-off**: While managing two different `SecurityFilterChain`s increases complexity, this cost was accepted for maximum flexibility.
 
-### ⏱️ Zaman Yönetimi ve Sprint Stratejisi
-4 günlük kısıtlı sürede " çalışan ve kaliteli" bir ürün çıkarmak için şu yöntemler izlendi:
-- **Pragmatik DDD**: Karmaşık Value Object yapıları yerine ilk aşamada JPA Entity ve basit DTO'lar kullanıldı (DDD-lite).
-- **Manual Mapping**: MapStruct gibi kütüphanelerin konfigürasyonuyla vakit kaybetmek yerine, şeffaflık ve hata ayıklama kolaylığı için manuel mapping tercih edildi.
-- **SSR-First**: Angular ile vakit kaybetmek yerine, ilk fazda Thymeleaf + Bootstrap ile çalışan bir arayüz sunularak "minimum viable product" (MVP) hedeflendi.
+### ⏱️ Time Management and Sprint Strategy
+To deliver a high-quality, working product within 4 days, the following methods were applied:
+- **Pragmatic DDD**: Instead of complex Value Object structures, JPA Entities and simple DTOs were used in the first phase (DDD-lite).
+- **Manual Mapping**: Manual mapping was preferred for transparency and ease of debugging, rather than spending time on MapStruct configurations.
+- **SSR-First**: To meet the MVP target, a Thymeleaf + Bootstrap interface was prioritized over spending time on a full Angular SPA in the first phase.
 
-### ⚖️ Karşılaşılan Trade-offlar (Ödünleşimler)
-1. **Veritabanı Erişimi**: Domain modelleri ile Entity'leri tamamen ayırmak yerine, geliştirme hızını artırmak için JPA Entity'leri domain katmanına yakın tutuldu.
-2. **Validasyon**: Validasyon mantığı hem DTO'larda (Jakarta Validation) hem de domain seviyesinde tutularak "fail-fast" yaklaşımı benimsendi, bu da kod tekrarını bir miktar artırsa da güvenliği maksimize etti.
-3. **Frontend**: Zengin bir SPA (Single Page App) yerine klasik bir Web App yapısı kuruldu; ancak API'ler tamamen decoupled (bağımsız) bırakılarak geçiş yolu açık tutuldu.
+### ⚖️ Trade-offs
+1. **Database Access**: Instead of completely decoupling domain models from Entities, JPA Entities were kept close to the domain layer to increase development speed.
+2. **Validation**: Validation logic was maintained in both DTOs (Jakarta Validation) and the domain level to ensure a "fail-fast" approach, which slightly increases code duplication but maximizes security.
+3. **Frontend**: A classic Web App structure was built instead of a rich SPA; however, APIs were left completely decoupled to keep the migration path open.
