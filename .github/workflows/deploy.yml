@@ -10,6 +10,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check Required Secrets
+        run: |
+          if [ -z "${{ secrets.SERVER_HOST }}" ]; then echo "❌ SERVER_HOST secret is missing!"; exit 1; fi
+          if [ -z "${{ secrets.SERVER_USER }}" ]; then echo "❌ SERVER_USER secret is missing!"; exit 1; fi
+          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then echo "❌ SSH_PRIVATE_KEY secret is missing!"; exit 1; fi
+          echo "✅ All required secrets are present."
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -23,25 +30,25 @@ jobs:
       - name: Build with Gradle
         run: cd backend && ./gradlew build -x test
 
-      - name: Deploy via SSH
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT }}
-          source: "backend/build/libs/*.jar"
-          target: "/home/${{ secrets.SERVER_USER }}/app/deploy"
-          strip_components: 2
+      # - name: Deploy via SSH
+      #   uses: appleboy/scp-action@master
+      #   with:
+      #     host: ${{ secrets.SERVER_HOST }}
+      #     username: ${{ secrets.SERVER_USER }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     port: ${{ secrets.SERVER_PORT }}
+      #     source: "backend/build/libs/*.jar"
+      #     target: "/home/${{ secrets.SERVER_USER }}/app/deploy"
+      #     strip_components: 2
 
-      - name: Restart Application via SSH
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT }}
-          script: |
-            # Example restart script
-            cd /home/${{ secrets.SERVER_USER }}/app
-            ./restart.sh
+      # - name: Restart Application via SSH
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.SERVER_HOST }}
+      #     username: ${{ secrets.SERVER_USER }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     port: ${{ secrets.SERVER_PORT }}
+      #     script: |
+      #       # Example restart script
+      #       cd /home/${{ secrets.SERVER_USER }}/app
+      #       ./restart.sh
