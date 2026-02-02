@@ -12,20 +12,16 @@ jobs:
       - name: Check Required Secrets
         shell: bash
         run: |
-          required=(SERVER_HOST SERVER_USER SSH_PRIVATE_KEY SERVER_PORT)
-          missing=()
-          for k in "${required[@]}"; do
-            if [ -z "${!k}" ]; then missing+=("$k"); fi
-          done
-          if [ "${#missing[@]}" -ne 0 ]; then
-            echo "Missing required secrets: ${missing[*]}"
+          if [ -z "$SERVER_HOST" ] || [ -z "$SERVER_USER" ] || [ -z "$SSH_PRIVATE_KEY" ] || [ -z "$SERVER_PORT" ]; then
+            echo "❌ Missing required secrets (SERVER_HOST, SERVER_USER, SSH_PRIVATE_KEY, or SERVER_PORT)."
             exit 1
           fi
+          echo "✅ All required secrets are present."
         env:
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SERVER_PORT: ${{ secrets.SERVER_PORT }}
+          SERVER_HOST: "${{ secrets.SERVER_HOST }}"
+          SERVER_USER: "${{ secrets.SERVER_USER }}"
+          SSH_PRIVATE_KEY: "${{ secrets.SSH_PRIVATE_KEY }}"
+          SERVER_PORT: "${{ secrets.SERVER_PORT }}"
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
