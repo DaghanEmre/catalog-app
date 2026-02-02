@@ -6,6 +6,13 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+/**
+ * Shared Base for Integration Tests.
+ * 
+ * Utilizes Testcontainers to provide a real PostgreSQL instance.
+ * Uses @ServiceConnection to automatically bind container JDBC properties to
+ * Spring.
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 public abstract class AbstractIntegrationTest {

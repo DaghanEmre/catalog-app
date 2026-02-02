@@ -7,6 +7,12 @@ import com.daghan.catalog.domain.model.ProductStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Primary Use-Case for Product creation.
+ * 
+ * Orchestrates domain logic and persistence.
+ * Defines the transaction boundary for this operation.
+ */
 @Service
 public class CreateProductUseCase {
 

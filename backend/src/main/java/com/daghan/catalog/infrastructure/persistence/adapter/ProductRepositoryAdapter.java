@@ -9,6 +9,12 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Infrastructure Adapter implementing ProductRepositoryPort.
+ * 
+ * Bridges the Application Layer's needs with Spring Data JPA.
+ * Handles Domain <-> Entity mapping during I/O.
+ */
 @Component
 public class ProductRepositoryAdapter implements ProductRepositoryPort {
 

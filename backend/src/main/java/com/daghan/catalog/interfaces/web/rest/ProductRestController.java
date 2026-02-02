@@ -18,6 +18,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST API Adapter for Product management.
+ * 
+ * Communicates solely via Use-Cases (Application Layer).
+ * Handles DTO-to-Command mapping and Domain-to-Response mapping.
+ */
 @RestController
 @RequestMapping("/api/products")
 @Tag(name = "Products", description = "Product management endpoints")
