@@ -7,6 +7,7 @@ import com.daghan.catalog.infrastructure.persistence.repository.SpringDataProduc
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -48,8 +49,8 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
             // Create
             entity = mapper.toEntity(product);
         } else {
-            // Update
-            Long id = product.getId();
+            // Update - id is guaranteed non-null here due to the if-check above
+            Long id = Objects.requireNonNull(product.getId(), "Product ID cannot be null for update");
             entity = jpaRepository.findById(id)
                     .orElseGet(() -> mapper.toEntity(product));
             mapper.updateEntity(entity, product);
