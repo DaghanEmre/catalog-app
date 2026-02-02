@@ -1,13 +1,12 @@
 package com.daghan.catalog;
 
+import com.daghan.catalog.integration.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class CatalogApplicationTests {
+class CatalogApplicationTests extends AbstractIntegrationTest {
 
     @Test
     void contextLoads() {
-        // Basic smoke test to ensure application context loads successfully
     }
+
 }
