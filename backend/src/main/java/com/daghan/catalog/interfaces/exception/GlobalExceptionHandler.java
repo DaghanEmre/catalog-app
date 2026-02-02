@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,11 +32,17 @@ public class GlobalExceptionHandler {
 
         // Pre-created URI constants to avoid null-safety warnings and improve
         // performance
+        @NonNull
         private static final URI TYPE_VALIDATION_ERROR = URI.create("urn:problem-type:validation-error");
+        @NonNull
         private static final URI TYPE_ACCESS_DENIED = URI.create("urn:problem-type:access-denied");
+        @NonNull
         private static final URI TYPE_INVALID_INPUT = URI.create("urn:problem-type:invalid-input");
+        @NonNull
         private static final URI TYPE_STATE_CONFLICT = URI.create("urn:problem-type:state-conflict");
+        @NonNull
         private static final URI TYPE_NOT_FOUND = URI.create("urn:problem-type:not-found");
+        @NonNull
         private static final URI TYPE_INTERNAL_ERROR = URI.create("urn:problem-type:internal-error");
 
         private static final String TIMESTAMP_PROPERTY = "timestamp";
