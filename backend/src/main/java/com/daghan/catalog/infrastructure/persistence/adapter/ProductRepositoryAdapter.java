@@ -7,6 +7,7 @@ import com.daghan.catalog.infrastructure.persistence.repository.SpringDataProduc
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -35,6 +36,8 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
 
     @Override
     public Optional<Product> findById(Long id) {
+        if (id == null)
+            return Optional.empty();
         return jpaRepository.findById(id)
                 .map(mapper::toDomain);
     }
@@ -46,23 +49,29 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
             // Create
             entity = mapper.toEntity(product);
         } else {
-            // Update
-            entity = jpaRepository.findById(product.getId())
-                    .orElseGet(() -> mapper.toEntity(product)); // Fallback to toEntity if not found (unexpected)
+            // Update - id is guaranteed non-null here due to the if-check above
+            Long id = Objects.requireNonNull(product.getId(), "Product ID cannot be null for update");
+            entity = jpaRepository.findById(id)
+                    .orElseGet(() -> mapper.toEntity(product));
             mapper.updateEntity(entity, product);
         }
 
+        if (entity == null) {
+            throw new IllegalStateException("Entity could not be mapped or found");
+        }
         ProductEntity savedEntity = jpaRepository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 
     @Override
     public void deleteById(Long id) {
-        jpaRepository.deleteById(id);
+        if (id != null) {
+            jpaRepository.deleteById(id);
+        }
     }
 
     @Override
     public boolean existsById(Long id) {
-        return jpaRepository.existsById(id);
+        return id != null && jpaRepository.existsById(id);
     }
 }
