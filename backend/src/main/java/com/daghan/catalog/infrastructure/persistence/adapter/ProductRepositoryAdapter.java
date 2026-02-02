@@ -35,6 +35,8 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
 
     @Override
     public Optional<Product> findById(Long id) {
+        if (id == null)
+            return Optional.empty();
         return jpaRepository.findById(id)
                 .map(mapper::toDomain);
     }
@@ -47,22 +49,28 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
             entity = mapper.toEntity(product);
         } else {
             // Update
-            entity = jpaRepository.findById(product.getId())
-                    .orElseGet(() -> mapper.toEntity(product)); // Fallback to toEntity if not found (unexpected)
+            Long id = product.getId();
+            entity = jpaRepository.findById(id)
+                    .orElseGet(() -> mapper.toEntity(product));
             mapper.updateEntity(entity, product);
         }
 
+        if (entity == null) {
+            throw new IllegalStateException("Entity could not be mapped or found");
+        }
         ProductEntity savedEntity = jpaRepository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 
     @Override
     public void deleteById(Long id) {
-        jpaRepository.deleteById(id);
+        if (id != null) {
+            jpaRepository.deleteById(id);
+        }
     }
 
     @Override
     public boolean existsById(Long id) {
-        return jpaRepository.existsById(id);
+        return id != null && jpaRepository.existsById(id);
     }
 }

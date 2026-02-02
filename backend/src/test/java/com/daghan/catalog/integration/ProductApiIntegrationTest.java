@@ -33,7 +33,8 @@ class ProductApiIntegrationTest extends AbstractIntegrationTest {
 
         assertEquals(HttpStatus.OK, loginResponse.getStatusCode());
         assertNotNull(loginResponse.getBody());
-        this.adminToken = loginResponse.getBody().token();
+        this.adminToken = java.util.Objects.requireNonNull(loginResponse.getBody().token(),
+                "Admin token must not be null");
     }
 
     @Test
@@ -42,7 +43,7 @@ class ProductApiIntegrationTest extends AbstractIntegrationTest {
         ProductRequest request = new ProductRequest("Integrated Product", new BigDecimal("150.00"), 5, "ACTIVE");
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(adminToken);
+        headers.setBearerAuth(java.util.Objects.requireNonNull(adminToken));
         HttpEntity<ProductRequest> entity = new HttpEntity<>(request, headers);
 
         ResponseEntity<ProductResponse> createResponse = restTemplate.exchange(
@@ -57,7 +58,7 @@ class ProductApiIntegrationTest extends AbstractIntegrationTest {
 
         // 2. List Products
         HttpHeaders listHeaders = new HttpHeaders();
-        listHeaders.setBearerAuth(adminToken);
+        listHeaders.setBearerAuth(java.util.Objects.requireNonNull(adminToken));
         HttpEntity<Void> listEntity = new HttpEntity<>(listHeaders);
 
         ResponseEntity<List> listResponse = restTemplate.exchange(
