@@ -3,8 +3,12 @@ package com.daghan.catalog.interfaces.web.rest;
 import com.daghan.catalog.application.command.CreateProductCommand;
 import com.daghan.catalog.application.command.DeleteProductCommand;
 import com.daghan.catalog.application.command.UpdateProductCommand;
+import com.daghan.catalog.application.port.paging.PageRequest;
+import com.daghan.catalog.application.port.paging.PageResult;
 import com.daghan.catalog.application.usecase.*;
 import com.daghan.catalog.domain.model.Product;
+import com.daghan.catalog.domain.model.ProductStatus;
+import com.daghan.catalog.interfaces.web.rest.dto.PagedResponse;
 import com.daghan.catalog.interfaces.web.rest.dto.ProductRequest;
 import com.daghan.catalog.interfaces.web.rest.dto.ProductResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +21,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * REST API Adapter for Product management.
@@ -35,17 +40,20 @@ public class ProductRestController {
     private final DeleteProductUseCase deleteProductUseCase;
     private final ListProductsUseCase listProductsUseCase;
     private final GetProductUseCase getProductUseCase;
+    private final SearchProductsPageUseCase searchProductsPageUseCase;
 
     public ProductRestController(CreateProductUseCase createProductUseCase,
             UpdateProductUseCase updateProductUseCase,
             DeleteProductUseCase deleteProductUseCase,
             ListProductsUseCase listProductsUseCase,
-            GetProductUseCase getProductUseCase) {
+            GetProductUseCase getProductUseCase,
+            SearchProductsPageUseCase searchProductsPageUseCase) {
         this.createProductUseCase = createProductUseCase;
         this.updateProductUseCase = updateProductUseCase;
         this.deleteProductUseCase = deleteProductUseCase;
         this.listProductsUseCase = listProductsUseCase;
         this.getProductUseCase = getProductUseCase;
+        this.searchProductsPageUseCase = searchProductsPageUseCase;
     }
 
     @GetMapping
@@ -103,5 +111,30 @@ public class ProductRestController {
     public ResponseEntity<Void> deleteProduct(@PathVariable @NonNull Long id) {
         deleteProductUseCase.execute(new DeleteProductCommand(id));
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * PR-1 Feature: Server-side pagination endpoint.
+     *
+     * @param q optional search query (matches product name)
+     * @param status optional product status filter
+     * @param page page index (0-based)
+     * @param size items per page (1-200)
+     * @param sort sort specification (e.g., "name,asc")
+     * @return paginated products with metadata
+     */
+    @GetMapping("/paged")
+    @Operation(summary = "List products (paged)", description = "Get products with server-side pagination and filtering")
+    public ResponseEntity<PagedResponse<ProductResponse>> pagedProducts(
+            @RequestParam Optional<String> q,
+            @RequestParam Optional<ProductStatus> status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(required = false) String sort) {
+
+        PageRequest pageRequest = PageRequest.of(page, size, sort != null ? sort : "id,asc");
+        PageResult<Product> result = searchProductsPageUseCase.execute(q, status, pageRequest);
+
+        return ResponseEntity.ok(PagedResponse.from(result, ProductResponse::fromDomain));
     }
 }

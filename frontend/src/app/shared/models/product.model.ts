@@ -14,3 +14,15 @@ export interface ProductRequest {
     stock: number;
     status: ProductStatus | string;
 }
+
+/**
+ * PR-1 Feature: Server-side pagination response wrapper.
+ * Returned by GET /api/products/paged endpoint.
+ */
+export interface PagedResponse<T> {
+    items: T[];
+    totalElements: number;
+    page: number;
+    size: number;
+}
+
