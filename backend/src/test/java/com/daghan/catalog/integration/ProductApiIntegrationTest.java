@@ -2,8 +2,8 @@ package com.daghan.catalog.integration;
 
 import com.daghan.catalog.application.dto.LoginRequest;
 import com.daghan.catalog.application.dto.LoginResponse;
-import com.daghan.catalog.application.dto.ProductRequest;
-import com.daghan.catalog.application.dto.ProductResponse;
+import com.daghan.catalog.interfaces.web.rest.dto.ProductRequest;
+import com.daghan.catalog.interfaces.web.rest.dto.ProductResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

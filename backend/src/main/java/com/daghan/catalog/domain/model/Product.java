@@ -51,6 +51,9 @@ public final class Product {
         if (id == null) {
             throw new InvalidProductInputException("ID required for reconstruction");
         }
+        if (status == null) {
+            throw new InvalidProductInputException("Status is required for reconstruction");
+        }
         validateName(name);
         validatePrice(price);
         validateStock(stock);
@@ -58,21 +61,18 @@ public final class Product {
     }
 
     private static void validateName(String name) {
-        if (name == null || name.isBlank()) {
+        if (name == null || name.isBlank())
             throw new InvalidProductInputException("Name is required");
-        }
     }
 
     private static void validatePrice(BigDecimal price) {
-        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) {
+        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0)
             throw new InvalidProductInputException("Price must be positive");
-        }
     }
 
     private static void validateStock(Integer stock) {
-        if (stock == null || stock < 0) {
+        if (stock == null || stock < 0)
             throw new InvalidProductInputException("Stock cannot be negative");
-        }
     }
 
     public void rename(String newName) {
@@ -95,6 +95,9 @@ public final class Product {
      * Prevents reactivating a DISCONTINUED product as per business requirements.
      */
     public void changeStatus(ProductStatus newStatus) {
+        if (newStatus == null)
+            throw new InvalidProductInputException("Status is required");
+
         if (this.status == ProductStatus.DISCONTINUED && newStatus == ProductStatus.ACTIVE) {
             throw new InvalidProductStateException("Cannot reactivate discontinued product");
         }

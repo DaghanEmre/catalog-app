@@ -52,4 +52,18 @@ class ProductTest {
         assertEquals(new BigDecimal("20.00"), product.getPrice());
         assertEquals(15, product.getStock());
     }
+
+    @Test
+    void shouldRejectNullStatusInReconstruct() {
+        assertThrows(InvalidProductInputException.class,
+                () -> Product.reconstruct(1L, "Test", new BigDecimal("10.00"), 5, null));
+    }
+
+    @Test
+    void shouldRejectNullStatusInChangeStatus() {
+        Product product = Product.create("Test", new BigDecimal("10.00"), 5, ProductStatus.ACTIVE);
+
+        assertThrows(InvalidProductInputException.class,
+                () -> product.changeStatus(null));
+    }
 }
