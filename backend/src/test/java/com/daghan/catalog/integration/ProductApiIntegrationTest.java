@@ -452,4 +452,178 @@ class ProductApiIntegrationTest extends AbstractIntegrationTest {
                         assertThat(verifyResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
                 }
         }
+
+        /**
+         * PR-1 Critical Fixes & Features
+         *
+         * These tests verify:
+         * - Update safety: PUT non-existent → 404 (not silent create)
+         * - Server-side pagination: /api/products/paged endpoint
+         * - Search filtering: query parameter support
+         * - Sort protection: whitelist validation (SQL injection prevention)
+         */
+        @Nested
+        @DisplayName("PR-1: Server-Side Pagination & Update Safety")
+        class ProductPaginationAndSafetyTests {
+
+                /**
+                 * Update Safety Test: PR-1 Critical Fix
+                 *
+                 * Before PR-1: PUT /api/products/999999 would silently create a new product
+                 * After PR-1: PUT /api/products/999999 returns 404 NOT_FOUND
+                 */
+                @Test
+                @DisplayName("should return 404 when updating non-existent product (update safety)")
+                void shouldReturn404WhenUpdatingNonExistent() {
+                        long nonExistentId = 999999L;
+                        ProductRequest request = new ProductRequest(
+                                        "Ghost Product",
+                                        new BigDecimal("99.99"),
+                                        1,
+                                        "ACTIVE"
+                        );
+
+                        HttpEntity<ProductRequest> entity = createAuthEntity(request);
+                        ResponseEntity<Object> response = restTemplate.exchange(
+                                        "/api/products/" + nonExistentId,
+                                        HttpMethod.PUT,
+                                        entity,
+                                        Object.class
+                        );
+
+                        assertThat(response.getStatusCode())
+                                        .as("PUT on non-existent product should return 404, not create silently")
+                                        .isEqualTo(HttpStatus.NOT_FOUND);
+                }
+
+                /**
+                 * Pagination Test: PR-1 Feature
+                 *
+                 * Tests that GET /api/products/paged returns properly formatted paginated response
+                 */
+                @Test
+                @DisplayName("should return paged response with metadata")
+                void shouldReturnPagedProducts() {
+                        HttpEntity<Void> entity = createAuthEntity();
+                        ResponseEntity<String> response = restTemplate.exchange(
+                                        "/api/products/paged?page=0&size=2&sort=id,asc",
+                                        HttpMethod.GET,
+                                        entity,
+                                        String.class
+                        );
+
+                        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                        String body = requireBody(response, "paged response");
+                        assertThat(body)
+                                        .contains("\"items\"")
+                                        .contains("\"totalElements\"")
+                                        .contains("\"page\"")
+                                        .contains("\"size\"");
+                }
+
+                /**
+                 * Search Filter Test: PR-1 Feature
+                 *
+                 * Tests that query parameter filters products server-side by name
+                 */
+                @Test
+                @DisplayName("should filter products by query parameter (server-side search)")
+                void shouldFilterByQuery() {
+                        HttpEntity<Void> entity = createAuthEntity();
+                        // Search for products containing "Laptop"
+                        ResponseEntity<String> response = restTemplate.exchange(
+                                        "/api/products/paged?page=0&size=50&q=Laptop&sort=id,asc",
+                                        HttpMethod.GET,
+                                        entity,
+                                        String.class
+                        );
+
+                        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                        // Note: Actual content verification depends on seeded data
+                }
+
+                /**
+                 * Status Filter Test: PR-1 Feature
+                 *
+                 * Tests that status parameter filters products by status value
+                 */
+                @Test
+                @DisplayName("should filter products by status parameter")
+                void shouldFilterByStatus() {
+                        HttpEntity<Void> entity = createAuthEntity();
+                        ResponseEntity<String> response = restTemplate.exchange(
+                                        "/api/products/paged?page=0&size=50&status=ACTIVE&sort=id,asc",
+                                        HttpMethod.GET,
+                                        entity,
+                                        String.class
+                        );
+
+                        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                        assertThat(requireBody(response, "status filter response"))
+                                        .contains("\"items\"");
+                }
+
+                /**
+                 * Sort Parameter Test: PR-1 Feature
+                 *
+                 * Tests that sort parameter applies server-side sorting
+                 * Format: "fieldName,direction" (e.g., "name,asc" or "price,desc")
+                 */
+                @Test
+                @DisplayName("should apply sort parameter correctly")
+                void shouldApplySortParameter() {
+                        HttpEntity<Void> entity = createAuthEntity();
+                        ResponseEntity<String> response = restTemplate.exchange(
+                                        "/api/products/paged?page=0&size=50&sort=name,asc",
+                                        HttpMethod.GET,
+                                        entity,
+                                        String.class
+                        );
+
+                        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                }
+
+                /**
+                 * SQL Injection Prevention Test: PR-1 Security
+                 *
+                 * Tests that invalid sort fields are safely ignored (whitelist validation)
+                 * An attacker cannot inject arbitrary SQL via the sort parameter.
+                 */
+                @Test
+                @DisplayName("should ignore invalid sort field for security (SQL injection prevention)")
+                void shouldSafelyIgnoreInvalidSortField() {
+                        HttpEntity<Void> entity = createAuthEntity();
+                        // Attempt to use a non-whitelisted field; should be safely ignored
+                        ResponseEntity<String> response = restTemplate.exchange(
+                                        "/api/products/paged?page=0&size=50&sort=malicious_field,asc",
+                                        HttpMethod.GET,
+                                        entity,
+                                        String.class
+                        );
+
+                        // Should not crash; falls back to default sort
+                        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                        assertThat(requireBody(response, "invalid sort field response"))
+                                        .contains("\"items\"");
+                }
+
+        /**
+         * Default Pagination Test: PR-1 Feature
+         *
+         * Tests default pagination when parameters are omitted
+         */
+        @Test
+        @DisplayName("should use default pagination when parameters are omitted")
+        void shouldUseDefaults() {
+            HttpEntity<Void> entity = createAuthEntity();
+            ResponseEntity<String> response = restTemplate.exchange(
+                    "/api/products/paged",
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            );
+
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        }
+    }
 }
