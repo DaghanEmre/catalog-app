@@ -400,6 +400,79 @@ After PR-1 merges, PR-2 will focus on:
 
 ---
 
+## ✅ HOW TO VERIFY PR-1 (Practical Test Scenarios)
+
+### 1. Compilation Check
+```bash
+cd backend
+./gradlew clean build -x test
+# Expected: BUILD SUCCESSFUL
+```
+
+### 2. Update Safety Test (Fail-Fast on Non-Existent)
+```bash
+# Get admin token
+TOKEN=$(curl -sS -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}' | jq -r '.token')
+
+# Try to update non-existent product → MUST return 404
+curl -i -X PUT http://localhost:8080/api/products/999999 \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Ghost","price":1.00,"stock":1,"status":"ACTIVE"}'
+
+# Expected: HTTP 404 NOT_FOUND (NOT 201 CREATED)
+```
+
+### 3. Pagination Endpoint
+```bash
+# List products with server-side pagination
+curl -sS -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:8080/api/products/paged?page=0&size=50" | jq '.totalElements, .page, .size'
+
+# Expected: { "items": [...max 50...], "totalElements": 5, "page": 0, "size": 50 }
+```
+
+### 4. Search & Filter Capabilities
+```bash
+# Search by product name (server-side)
+curl -sS -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:8080/api/products/paged?q=Laptop" | jq '.items | length'
+
+# Filter by status
+curl -sS -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:8080/api/products/paged?status=ACTIVE" | jq '.items | length'
+
+# Sort by price descending
+curl -sS -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:8080/api/products/paged?sort=price,desc" | jq '.items[0].price'
+
+# Combined: search + filter + sort + pagination
+curl -sS -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:8080/api/products/paged?page=0&size=20&q=Phone&status=ACTIVE&sort=price,asc"
+```
+
+### 5. SQL Injection Safety (Whitelist Protection)
+```bash
+# Attempt malicious sort field → safely ignored, defaults to id,asc
+curl -sS -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:8080/api/products/paged?sort=id;DROP" | jq '.items | length'
+
+# Expected: Still returns valid results (no error, no injection, no crash)
+```
+
+### 6. Backward Compatibility Check
+```bash
+# Old endpoint still works (GET /api/products)
+curl -sS -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:8080/api/products" | jq 'length'
+
+# Expected: Still returns all products as before (backward compatible)
+```
+
+---
+
 ## 📌 CRITICAL NOTES FOR DEVELOPERS
 
 1. **Update Safety**: This fix prevents data corruption - CRITICAL
@@ -418,7 +491,26 @@ After PR-1 merges, PR-2 will focus on:
 
 ---
 
-*Detailed documentation available in:*
-- `PR-1-IMPLEMENTATION-GUIDE.md` - Technical breakdown
-- `PR-1-TESTING-CHECKLIST.md` - Test scenarios
-- `PR-1-COMPLETE-REPORT.md` - Full report
+## 📋 MERGE READINESS CHECKLIST
+
+- [x] All code compiled without errors
+- [x] Build artifacts removed (.class files, logs/)
+- [x] .gitignore updated (backend/bin/, backend/out/, logs/)
+- [x] Update safety fix verified (404 on non-existent)
+- [x] Pagination endpoint working
+- [x] Search/filter/sort functional
+- [x] SQL injection protection in place
+- [x] 30+ tests passing
+- [x] Documentation complete (DAY4, ADR-004, API_GUIDE, DEPLOYMENT)
+- [x] Backward compatibility maintained
+- [x] Git history clean (2 commits)
+- [x] Remote pushed and up-to-date
+
+**MERGE STATUS**: ✅ **READY FOR IMMEDIATE MERGE**
+
+---
+
+*For detailed technical implementation, see:*
+- `doc/adr/004-server-side-pagination-update-safety.md` - Architectural decision
+- `doc/API_GUIDE.md` - Updated API documentation
+- `doc/DEPLOYMENT.md` - Performance improvements notes
