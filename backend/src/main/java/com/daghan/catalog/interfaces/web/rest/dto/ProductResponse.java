@@ -1,4 +1,4 @@
-package com.daghan.catalog.application.dto;
+package com.daghan.catalog.interfaces.web.rest.dto;
 
 import com.daghan.catalog.domain.model.Product;
 
@@ -21,6 +21,7 @@ public record ProductResponse(
                 product.getStatus().name());
     }
 
+    // MVC template için (Thymeleaf backup)
     public String getFormattedPrice() {
         if (price == null)
             return "0.00";

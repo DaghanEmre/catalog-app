@@ -3,7 +3,7 @@ package com.daghan.catalog.interfaces.web.mvc;
 import com.daghan.catalog.application.command.CreateProductCommand;
 import com.daghan.catalog.application.command.DeleteProductCommand;
 import com.daghan.catalog.application.command.UpdateProductCommand;
-import com.daghan.catalog.application.dto.ProductResponse;
+import com.daghan.catalog.interfaces.web.rest.dto.ProductResponse;
 import com.daghan.catalog.application.usecase.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;

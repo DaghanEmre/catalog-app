@@ -1,4 +1,4 @@
-package com.daghan.catalog.application.dto;
+package com.daghan.catalog.interfaces.web.rest.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
